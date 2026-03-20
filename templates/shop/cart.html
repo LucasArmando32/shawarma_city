@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Warenkorb — Shawarma Falafel City{% endblock %}
+{% block content %}
+<h1>Dein Warenkorb</h1>
+
+{% if lines %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Artikel</th>
+                <th>Anzahl</th>
+                <th>Preis</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in lines %}
+            <tr>
+                <td><strong>{{ line.menu_item.name }}</strong></td>
+                <td>{{ line.quantity }}</td>
+                <td>{{ line.subtotal }} CHF</td>
+                <td>
+                    <form method="post" action="{% url 'shop:cart_remove' line.menu_item.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.8rem;">Entfernen</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="cart-total">Gesamt: {{ total }} CHF</p>
+    <a href="{% url 'shop:checkout' %}" class="btn btn-primary">Zur Kasse →</a>
+
+{% else %}
+    <p style="color:#aaa; margin-bottom:1.5rem;">Dein Warenkorb ist leer.</p>
+    <a href="{% url 'shop:menu' %}" class="btn btn-primary">Zur Speisekarte</a>
+{% endif %}
+{% endblock %}

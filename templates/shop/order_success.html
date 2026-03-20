@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Bestellung bestätigt — Shawarma Falafel City{% endblock %}
+{% block content %}
+<h1>Bestellung bestätigt! 🎉</h1>
+<p>Danke, {{ order.customer_name }}! Deine Bestellung <strong>#{{ order.pk }}</strong> ist bei uns eingegangen.</p>
+<p>Wir rufen dich unter <strong>{{ order.customer_phone }}</strong> an sobald sie fertig ist.</p>
+
+<h2>Zusammenfassung</h2>
+{% for item in order.items.all %}
+    <p>{{ item.quantity }}× {{ item.menu_item.name }} — {{ item.subtotal }} CHF</p>
+{% endfor %}
+<p class="cart-total">Gesamt: {{ order.total_price }} CHF</p>
+
+<a href="{% url 'shop:menu' %}" class="btn btn-primary">Zurück zur Speisekarte</a>
+{% endblock %}

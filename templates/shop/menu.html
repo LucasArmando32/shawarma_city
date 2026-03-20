@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Speisekarte — Shawarma Falafel City{% endblock %}
+
+{% block content %}
+<h1>Unsere Speisekarte</h1>
+
+{% if menu_data %}
+    <div class="category-tabs">
+        <button class="category-tab active" data-category="all">Alle</button>
+        {% for section in menu_data %}
+            <button class="category-tab" data-category="{{ section.category.slug }}">
+                {{ section.category.name }}
+            </button>
+        {% endfor %}
+    </div>
+
+    {% for section in menu_data %}
+        <div class="menu-section" data-section="{{ section.category.slug }}">
+            <h2>{{ section.category.name }}</h2>
+            <div class="menu-grid">
+                {% for item in section.items %}
+                    <div class="menu-card">
+                        {% if item.image %}
+                            <img class="menu-card-img" src="{{ item.image.url }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div class="menu-card-no-img">🌯</div>
+                        {% endif %}
+                        <div class="menu-card-body">
+                            <div class="menu-card-name">{{ item.name }}</div>
+                            {% if item.description %}
+                                <div class="menu-card-desc">{{ item.description }}</div>
+                            {% endif %}
+                            <div class="menu-card-footer">
+                                <span class="menu-card-price">{{ item.price }} CHF</span>
+                                <form method="post" action="{% url 'shop:cart_add' item.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-add">+ Hinzufügen</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <p style="color: #aaa;">Momentan keine Artikel verfügbar. Schau später nochmal vorbei!</p>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const tabs = document.querySelectorAll('.category-tab');
+    const sections = document.querySelectorAll('.menu-section');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const selected = tab.dataset.category;
+            sections.forEach(section => {
+                section.style.display =
+                    (selected === 'all' || section.dataset.section === selected) ? 'block' : 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}

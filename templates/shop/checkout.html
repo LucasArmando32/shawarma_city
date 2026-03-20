@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Kasse — Shawarma Falafel City{% endblock %}
+{% block content %}
+<h1>Zur Kasse</h1>
+
+<h2>Deine Bestellung</h2>
+{% for line in lines %}
+    <p>{{ line.menu_item.name }} × {{ line.quantity }} — {{ line.subtotal }} CHF</p>
+{% endfor %}
+<p class="cart-total">Gesamt: {{ total }} CHF</p>
+
+<h2>Deine Angaben</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <button type="submit" class="btn btn-primary">Bestellung aufgeben 🔥</button>
+</form>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Shawarma Falafel City — Startseite{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <img class="hero-logo" src="{% static 'img/logo.png' %}" alt="Shawarma Falafel City Logo">
+
+        <div>
+            <p class="hero-subtitle">Willkommen bei</p>
+            <h1 class="hero-title">Shawarma<br>Falafel City</h1>
+            <p class="hero-arabic">شاورما المدينة</p>
+        </div>
+
+        <div class="hero-cta">
+            <a href="{% url 'shop:menu' %}" class="btn btn-primary">🔥 Zur Speisekarte</a>
+            <a href="{% url 'shop:cart' %}" class="btn btn-outline">🛒 Warenkorb</a>
+        </div>
+    </div>
+
+    <div class="hero-scroll">
+        <span>↓</span>
+        scrollen
+    </div>
+</div>
+
+<!-- ===== INFO STRIP ===== -->
+<div class="info-strip">
+    <div class="info-item">
+        <span class="info-icon">🕐</span>
+        <span class="info-label">Geöffnet</span>
+        <span class="info-value">11:00 – 22:00 Uhr</span>
+    </div>
+    <div class="info-item">
+        <span class="info-icon">📍</span>
+        <span class="info-label">Standort</span>
+        <span class="info-value">Dein Standort</span>
+    </div>
+    <div class="info-item">
+        <span class="info-icon">🛵</span>
+        <span class="info-label">Lieferung</span>
+        <span class="info-value">& Abholung</span>
+    </div>
+    <div class="info-item">
+        <span class="info-icon">⭐</span>
+        <span class="info-label">Frisch</span>
+        <span class="info-value">Jeden Tag</span>
+    </div>
+</div>
+
+<!-- ===== FEATURED ITEMS ===== -->
+{% if featured %}
+<div style="padding: 4rem 1.5rem; max-width: 1100px; margin: 0 auto;">
+    <p class="section-label">Aus unserer Küche</p>
+    <h2 class="section-title">Unsere Highlights</h2>
+
+    {% for section in featured %}
+        <h2>{{ section.category.name }}</h2>
+        <div class="menu-grid" style="margin-bottom: 3rem;">
+            {% for item in section.items %}
+                <div class="menu-card">
+                    {% if item.image %}
+                        <img class="menu-card-img" src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% else %}
+                        <div class="menu-card-no-img">🌯</div>
+                    {% endif %}
+                    <div class="menu-card-body">
+                        <div class="menu-card-name">{{ item.name }}</div>
+                        {% if item.description %}
+                            <div class="menu-card-desc">{{ item.description }}</div>
+                        {% endif %}
+                        <div class="menu-card-footer">
+                            <span class="menu-card-price">{{ item.price }} CHF</span>
+                            <form method="post" action="{% url 'shop:cart_add' item.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-add">+ Hinzufügen</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <div style="text-align:center; margin-top: 1rem;">
+        <a href="{% url 'shop:menu' %}" class="btn btn-primary">Zur vollen Speisekarte →</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const content = document.querySelector('.hero-content');
+        if (content) {
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(30px)';
+            content.style.transition = 'opacity 0.9s ease, transform 0.9s ease';
+            setTimeout(() => {
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        const cards = document.querySelectorAll('.menu-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, i * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}
