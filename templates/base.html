@@ -21,12 +21,18 @@
             <img src="{% static 'img/logo.png' %}" alt="Shawarma Falafel City" class="nav-logo">
             Shawarma Falafel City
         </a>
-        <ul class="nav-links">
+
+        <!-- Hamburger button (mobile only) -->
+        <button class="nav-hamburger" id="hamburger" aria-label="Menü öffnen">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="nav-links" id="nav-links">
             <li><a href="{% url 'shop:home' %}">Startseite</a></li>
             <li><a href="{% url 'shop:menu' %}">Speisekarte</a></li>
             <li>
                 <a href="{% url 'shop:cart' %}">
-                    Warenkorb <span class="cart-badge">{{ cart_count }}</span>
+                    🛒 Warenkorb <span class="cart-badge">{{ cart_count }}</span>
                 </a>
             </li>
         </ul>
@@ -47,5 +53,22 @@
     </footer>
 
     {% block extra_js %}{% endblock %}
+
+    <script>
+        // Hamburger toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks  = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            hamburger.classList.toggle('active');
+        });
+        // Close menu when a link is clicked
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>

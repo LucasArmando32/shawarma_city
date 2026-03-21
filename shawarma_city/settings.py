@@ -86,8 +86,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------
 # Localisation
 # ------------------------------------------------------------------
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Berlin'   # adjust to your timezone
+LANGUAGE_CODE = 'de'
+TIME_ZONE = 'Europe/Zurich'
 USE_I18N = True
 USE_TZ = True
 

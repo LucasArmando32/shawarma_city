@@ -17,4 +17,8 @@ urlpatterns = [
     # Checkout & confirmation
     path('checkout/', views.checkout, name='checkout'),
     path('order/<int:order_id>/success/', views.order_success, name='order_success'),
+
+    # Owner dashboard
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/order/<int:order_id>/status/', views.dashboard_update_status, name='dashboard_update_status'),
 ]

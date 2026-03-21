@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import Category, MenuItem, Order, OrderItem
 
+# Custom admin site titles (German)
+admin.site.site_header  = '🔥 Shawarma Falafel City — Verwaltung'
+admin.site.site_title   = 'Shawarma Falafel City'
+admin.site.index_title  = 'Willkommen im Verwaltungsbereich'
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

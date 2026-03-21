@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_POST
+from django.utils import timezone
 
 from .models import Category, MenuItem, Order, OrderItem
 from .forms import CheckoutForm
@@ -125,8 +127,7 @@ def cart_add(request, item_id):
     key = str(menu_item.pk)
     cart[key] = cart.get(key, 0) + 1
     request.session.modified = True
-    messages.success(request, f'"{menu_item.name}" added to your cart.')
-    # Stay on the same page — redirect back to wherever the request came from
+    messages.success(request, f'"{menu_item.name}" wurde zum Warenkorb hinzugefügt.')
     return redirect(request.META.get('HTTP_REFERER', 'shop:menu'))
 
 
@@ -167,7 +168,7 @@ def checkout(request):
     lines, total = _cart_details(request)
 
     if not lines:
-        messages.warning(request, 'Your cart is empty.')
+        messages.warning(request, 'Dein Warenkorb ist leer.')
         return redirect('shop:menu')
 
     if request.method == 'POST':
@@ -214,3 +215,52 @@ def order_success(request, order_id):
         'cart_count': 0,
     }
     return render(request, 'shop/order_success.html', context)
+
+
+# ---------------------------------------------------------------------------
+# Owner Dashboard — only accessible to staff/admin users
+# ---------------------------------------------------------------------------
+
+@staff_member_required(login_url='/admin/login/')
+def dashboard(request):
+    """
+    Einfaches Besitzer-Dashboard.
+    Zeigt alle Bestellungen von heute und offene Bestellungen.
+    """
+    today = timezone.localdate()
+
+    orders_today   = Order.objects.filter(created_at__date=today).order_by('-created_at')
+    orders_open    = Order.objects.filter(
+        status__in=[Order.Status.PENDING, Order.Status.CONFIRMED]
+    ).order_by('-created_at')
+    orders_ready   = Order.objects.filter(status=Order.Status.READY).order_by('-created_at')
+
+    # Stats
+    total_today    = sum(o.total_price for o in orders_today)
+    count_pending  = orders_open.filter(status=Order.Status.PENDING).count()
+    count_today    = orders_today.count()
+
+    context = {
+        'orders_open':   orders_open,
+        'orders_ready':  orders_ready,
+        'orders_today':  orders_today,
+        'total_today':   total_today,
+        'count_pending': count_pending,
+        'count_today':   count_today,
+        'cart_count':    0,
+        'Status':        Order.Status,
+    }
+    return render(request, 'shop/dashboard.html', context)
+
+
+@staff_member_required(login_url='/admin/login/')
+@require_POST
+def dashboard_update_status(request, order_id):
+    """Ändert den Status einer Bestellung direkt vom Dashboard aus."""
+    order     = get_object_or_404(Order, pk=order_id)
+    new_status = request.POST.get('status')
+    if new_status in Order.Status.values:
+        order.status = new_status
+        order.save(update_fields=['status'])
+        messages.success(request, f'Bestellung #{order.pk} → {order.get_status_display()}')
+    return redirect('shop:dashboard')

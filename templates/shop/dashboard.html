@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Besitzer-Dashboard — Shawarma Falafel City{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto; padding: 2rem 1rem;">
+
+    <h1>🔥 Besitzer-Dashboard</h1>
+
+    <!-- ===== STATS ===== -->
+    <div class="dash-stats">
+        <div class="dash-stat">
+            <span class="dash-stat-value">{{ count_today }}</span>
+            <span class="dash-stat-label">Bestellungen heute</span>
+        </div>
+        <div class="dash-stat">
+            <span class="dash-stat-value">{{ count_pending }}</span>
+            <span class="dash-stat-label">Neu / Ausstehend</span>
+        </div>
+        <div class="dash-stat">
+            <span class="dash-stat-value">{{ total_today }} CHF</span>
+            <span class="dash-stat-label">Umsatz heute</span>
+        </div>
+    </div>
+
+    <!-- ===== OFFENE BESTELLUNGEN ===== -->
+    <h2 style="margin-top:2.5rem;">⏳ Offene Bestellungen</h2>
+
+    {% if orders_open %}
+        {% for order in orders_open %}
+            <div class="dash-order {% if order.status == 'pending' %}dash-order--pending{% else %}dash-order--confirmed{% endif %}">
+                <div class="dash-order-header">
+                    <span class="dash-order-id">#{{ order.pk }}</span>
+                    <span class="dash-order-name">{{ order.customer_name }}</span>
+                    <span class="dash-order-phone">📞 {{ order.customer_phone }}</span>
+                    <span class="dash-order-type">
+                        {% if order.order_type == 'delivery' %}🛵 Lieferung{% else %}🏃 Abholung{% endif %}
+                    </span>
+                    <span class="dash-order-total">{{ order.total_price }} CHF</span>
+                    <span class="dash-order-time">{{ order.created_at|time:"H:i" }} Uhr</span>
+                </div>
+
+                <!-- Items -->
+                <div class="dash-order-items">
+                    {% for item in order.items.all %}
+                        <span>{{ item.quantity }}× {{ item.menu_item.name }}</span>
+                    {% endfor %}
+                </div>
+
+                {% if order.notes %}
+                    <div class="dash-order-notes">💬 {{ order.notes }}</div>
+                {% endif %}
+
+                <!-- Status ändern -->
+                <div class="dash-order-actions">
+                    {% if order.status == 'pending' %}
+                        <form method="post" action="{% url 'shop:dashboard_update_status' order.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <button class="dash-btn dash-btn--confirm">✅ Bestätigen</button>
+                        </form>
+                    {% endif %}
+                    <form method="post" action="{% url 'shop:dashboard_update_status' order.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="ready">
+                        <button class="dash-btn dash-btn--ready">🔔 Fertig / Bereit</button>
+                    </form>
+                    <form method="post" action="{% url 'shop:dashboard_update_status' order.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="cancelled">
+                        <button class="dash-btn dash-btn--cancel">✖ Stornieren</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:#aaa; margin-top:1rem;">Keine offenen Bestellungen. 🎉</p>
+    {% endif %}
+
+    <!-- ===== FERTIGE BESTELLUNGEN ===== -->
+    {% if orders_ready %}
+    <h2 style="margin-top:2.5rem;">🔔 Bereit zur Abholung / Lieferung</h2>
+    {% for order in orders_ready %}
+        <div class="dash-order dash-order--ready">
+            <div class="dash-order-header">
+                <span class="dash-order-id">#{{ order.pk }}</span>
+                <span class="dash-order-name">{{ order.customer_name }}</span>
+                <span class="dash-order-phone">📞 {{ order.customer_phone }}</span>
+                <span class="dash-order-total">{{ order.total_price }} CHF</span>
+            </div>
+            <div class="dash-order-actions">
+                <form method="post" action="{% url 'shop:dashboard_update_status' order.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="delivered">
+                    <button class="dash-btn dash-btn--confirm">✅ Geliefert / Abgeholt</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- ===== ALLE BESTELLUNGEN HEUTE ===== -->
+    <h2 style="margin-top:2.5rem;">📋 Alle Bestellungen heute</h2>
+    {% if orders_today %}
+    <table class="cart-table" style="width:100%;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Kunde</th>
+                <th>Telefon</th>
+                <th>Art</th>
+                <th>Betrag</th>
+                <th>Status</th>
+                <th>Zeit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders_today %}
+            <tr>
+                <td>#{{ order.pk }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.customer_phone }}</td>
+                <td>{% if order.order_type == 'delivery' %}🛵{% else %}🏃{% endif %}</td>
+                <td>{{ order.total_price }} CHF</td>
+                <td>
+                    <span class="dash-status dash-status--{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ order.created_at|time:"H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="color:#aaa;">Noch keine Bestellungen heute.</p>
+    {% endif %}
+
+    <div style="margin-top:2rem;">
+        <a href="/admin/shop/order/" class="btn btn-outline">Alle Bestellungen (Admin) →</a>
+    </div>
+
+</div>
+{% endblock %}
