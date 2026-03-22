@@ -255,6 +255,16 @@ def dashboard(request):
 
 @staff_member_required(login_url='/admin/login/')
 @require_POST
+def dashboard_delete_order(request, order_id):
+    """Löscht eine Bestellung direkt vom Dashboard aus."""
+    order = get_object_or_404(Order, pk=order_id)
+    order.delete()
+    messages.success(request, f'Bestellung #{order_id} wurde gelöscht.')
+    return redirect('shop:dashboard')
+
+
+@staff_member_required(login_url='/admin/login/')
+@require_POST
 def dashboard_update_status(request, order_id):
     """Ändert den Status einer Bestellung direkt vom Dashboard aus."""
     order     = get_object_or_404(Order, pk=order_id)

@@ -49,15 +49,15 @@ class Order(models.Model):
     """
 
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        CONFIRMED = 'confirmed', 'Confirmed'
-        READY = 'ready', 'Ready for pickup'
-        DELIVERED = 'delivered', 'Delivered'
-        CANCELLED = 'cancelled', 'Cancelled'
+        PENDING = 'pending', 'Ausstehend'
+        CONFIRMED = 'confirmed', 'Bestätigt'
+        READY = 'ready', 'Bereit zur Abholung'
+        DELIVERED = 'delivered', 'Geliefert'
+        CANCELLED = 'cancelled', 'Storniert'
 
     class OrderType(models.TextChoices):
-        PICKUP = 'pickup', 'Pickup'
-        DELIVERY = 'delivery', 'Delivery'
+        PICKUP = 'pickup', 'Abholung'
+        DELIVERY = 'delivery', 'Lieferung'
 
     # Customer info
     customer_name = models.CharField(max_length=200)

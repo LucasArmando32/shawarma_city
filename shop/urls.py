@@ -21,4 +21,5 @@ urlpatterns = [
     # Owner dashboard
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/order/<int:order_id>/status/', views.dashboard_update_status, name='dashboard_update_status'),
+    path('dashboard/order/<int:order_id>/delete/', views.dashboard_delete_order, name='dashboard_delete_order'),
 ]

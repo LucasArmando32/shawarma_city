@@ -20,33 +20,33 @@ class CheckoutForm(forms.ModelForm):
         ]
         widgets = {
             'customer_name': forms.TextInput(attrs={
-                'placeholder': 'Your name',
+                'placeholder': 'Dein Name',
                 'class': 'form-control',
             }),
             'customer_phone': forms.TextInput(attrs={
-                'placeholder': 'Phone number',
+                'placeholder': 'Telefonnummer',
                 'class': 'form-control',
             }),
             'order_type': forms.RadioSelect(attrs={
                 'class': 'order-type-radio',
             }),
             'customer_address': forms.Textarea(attrs={
-                'placeholder': 'Delivery address (only needed for delivery)',
+                'placeholder': 'Lieferadresse (nur bei Lieferung nötig)',
                 'rows': 3,
                 'class': 'form-control',
             }),
             'notes': forms.Textarea(attrs={
-                'placeholder': 'Any special requests? e.g. no onions, extra sauce...',
+                'placeholder': 'Besondere Wünsche? z.B. ohne Zwiebeln, extra Sauce...',
                 'rows': 3,
                 'class': 'form-control',
             }),
         }
         labels = {
-            'customer_name': 'Your Name',
-            'customer_phone': 'Phone Number',
-            'order_type': 'How would you like to receive your order?',
-            'customer_address': 'Delivery Address',
-            'notes': 'Notes for the kitchen',
+            'customer_name': 'Dein Name',
+            'customer_phone': 'Telefonnummer',
+            'order_type': 'Wie möchtest du deine Bestellung erhalten?',
+            'customer_address': 'Lieferadresse',
+            'notes': 'Anmerkungen für die Küche',
         }
 
     def clean(self):
@@ -56,6 +56,6 @@ class CheckoutForm(forms.ModelForm):
 
         # Address is required only when the customer chooses delivery
         if order_type == Order.OrderType.DELIVERY and not address:
-            self.add_error('customer_address', 'Please provide a delivery address.')
+            self.add_error('customer_address', 'Bitte gib eine Lieferadresse an.')
 
         return cleaned_data
