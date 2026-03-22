@@ -13,7 +13,8 @@ class Category(models.Model):
 
     class Meta:
         ordering = ['order', 'name']
-        verbose_name_plural = 'Categories'
+        verbose_name = 'Kategorie'
+        verbose_name_plural = 'Kategorien'
 
     def __str__(self):
         return self.name
@@ -37,6 +38,8 @@ class MenuItem(models.Model):
 
     class Meta:
         ordering = ['order', 'name']
+        verbose_name = 'Menü-Artikel'
+        verbose_name_plural = 'Menü-Artikel'
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"
@@ -83,9 +86,11 @@ class Order(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        verbose_name = 'Bestellung'
+        verbose_name_plural = 'Bestellungen'
 
     def __str__(self):
-        return f"Order #{self.pk} — {self.customer_name} ({self.status})"
+        return f"Bestellung #{self.pk} — {self.customer_name} ({self.status})"
 
     def calculate_total(self):
         """Recalculates and saves the total from all order items."""

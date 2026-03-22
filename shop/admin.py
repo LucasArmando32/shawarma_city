@@ -1,10 +1,25 @@
 from django.contrib import admin
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.apps import apps
 from .models import Category, MenuItem, Order, OrderItem
 
-# Custom admin site titles (German)
+# Custom admin site titles (Kurdish)
 admin.site.site_header  = '🔥 Shawarma Falafel City — Verwaltung'
 admin.site.site_title   = 'Shawarma Falafel City'
 admin.site.index_title  = 'Willkommen im Verwaltungsbereich'
+
+# Re-register with Kurdish labels
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+@admin.register(User)
+class KurdishUserAdmin(UserAdmin):
+    pass
+
+@admin.register(Group)
+class KurdishGroupAdmin(GroupAdmin):
+    pass
 
 
 @admin.register(Category)

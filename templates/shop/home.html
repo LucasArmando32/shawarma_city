@@ -6,8 +6,6 @@
 
 <!-- ===== HERO ===== -->
 <div class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-overlay"></div>
 
     <div class="hero-content">
         <img class="hero-logo" src="{% static 'img/logo.png' %}" alt="Shawarma Falafel City Logo">
@@ -98,37 +96,18 @@
 
 {% block extra_js %}
 <script>
+    // Hero einblenden beim Laden
     document.addEventListener('DOMContentLoaded', () => {
         const content = document.querySelector('.hero-content');
         if (content) {
             content.style.opacity = '0';
-            content.style.transform = 'translateY(30px)';
-            content.style.transition = 'opacity 0.9s ease, transform 0.9s ease';
+            content.style.transform = 'translateY(40px)';
+            content.style.transition = 'opacity 1s cubic-bezier(0.22,1,0.36,1), transform 1s cubic-bezier(0.22,1,0.36,1)';
             setTimeout(() => {
                 content.style.opacity = '1';
                 content.style.transform = 'translateY(0)';
-            }, 100);
+            }, 150);
         }
-
-        const cards = document.querySelectorAll('.menu-card');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, i) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, i * 80);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        cards.forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(card);
-        });
     });
 </script>
 {% endblock %}

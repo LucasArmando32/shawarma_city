@@ -23,7 +23,7 @@
                         {% if item.image %}
                             <img class="menu-card-img" src="{{ item.image.url }}" alt="{{ item.name }}">
                         {% else %}
-                            <div class="menu-card-no-img">🌯</div>
+                            <div class="menu-card-no-img">{% if section.category.slug == 'getraenke' %}🥤{% else %}🌯{% endif %}</div>
                         {% endif %}
                         <div class="menu-card-body">
                             <div class="menu-card-name">{{ item.name }}</div>

@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Shawarma Falafel City{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=2">
 </head>
 <body>
 
+    <!-- Feuer-Ränder links und rechts (ganzer Bildschirm) -->
+    <div class="fire-edge fire-edge--left"></div>
+    <div class="fire-edge fire-edge--right"></div>
+
     <!-- Topbar mit Telefonnummer -->
     <div class="topbar">
-        <span>📞 <a href="tel:+41123456789">+41 12 345 67 89</a></span>
+        <span>📞 <a href="tel:+41123456789">+41 78 720 78 73</a></span>
         <span>🕐 Mo–So: 11:00 – 22:00 Uhr</span>
         <span>🏠 Hauslieferung gratis</span>
     </div>
@@ -35,6 +39,9 @@
                     🛒 Warenkorb <span class="cart-badge">{{ cart_count }}</span>
                 </a>
             </li>
+            {% if request.user.is_staff %}
+            <li><a href="{% url 'shop:dashboard' %}" class="nav-link-dashboard">🔧 Dashboard</a></li>
+            {% endif %}
         </ul>
     </nav>
 
@@ -52,6 +59,8 @@
         <p>Shawarma Falafel City &copy; 2026 — شاورما المدينة</p>
     </footer>
 
+    {% load static %}
+    <script src="{% static 'js/animations.js' %}"></script>
     {% block extra_js %}{% endblock %}
 
     <script>

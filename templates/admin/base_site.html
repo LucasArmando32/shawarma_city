@@ -1,0 +1,140 @@
+{% extends "admin/base.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    #lang-toggle-btn {
+        background: rgba(255,102,0,0.15);
+        border: 1px solid rgba(255,102,0,0.5);
+        color: #ffcc00;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-left: 1rem;
+        transition: all 0.2s;
+    }
+    #lang-toggle-btn:hover {
+        background: rgba(255,102,0,0.35);
+        border-color: #ff6600;
+    }
+</style>
+{% endblock %}
+
+{% block userlinks %}
+    {{ block.super }}
+    <button id="lang-toggle-btn" onclick="toggleLang()">🌐 Kurdî</button>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script>
+// =====================================================
+// Wörterbuch: Deutsch → Kurdisch (Kurmanji)
+// =====================================================
+const translations = {
+    // Navigation & Buttons
+    'Hinzufügen':                           'Zêde bike',
+    'Ändern':                               'Biguherîne',
+    'Löschen':                              'Jêbibe',
+    'Speichern':                            'Tomar bike',
+    'Sichern':                              'Tomar bike',
+    'Suchen':                               'Bigere',
+    'Ausführen':                            'Bixebitîne',
+    'Zurück':                               'Vegere',
+    'Abbrechen':                            'Betal bike',
+    'Ja, ich bin sicher':                   'Erê, ez piştrast im',
+
+    // Header & Nav
+    'Willkommen im Verwaltungsbereich':     'Bi xêr hatî nav beşa rêvebirînê',
+    'Website anzeigen':                     'Malperê nîşan bide',
+    'Passwort ändern':                      'Şîfreyê biguherîne',
+    'Abmelden':                             'Derkeve',
+
+    // Sections
+    'Authentifizierung und Autorisierung':  'Nasname û Destûr',
+    'Neueste Aktionen':                     'Çalakiyên dawî',
+    'Meine Aktionen':                       'Çalakiyên min',
+    'Filter':                               'Parzûn',
+    'Nach status':                          'Li gorî rewşê',
+    'Nach order type':                      'Li gorî celebê',
+    'Anzahl anzeigen':                      'Hejmaran nîşan bide',
+
+    // Models
+    'Benutzer':                             'Bikarhêner',
+    'Gruppen':                              'Kom',
+    'Categories':                           'Kategorî',
+    'Menu items':                           'Xwarinên Menuyê',
+    'Orders':                               'Ferman',
+
+    // Table headers
+    'Aktion':                               'Çalakî',
+    'ID':                                   'Jimare',
+    'Kunde':                                'Mişterî',
+
+    // Save buttons (bottom of forms)
+    'Speichern und weiteren hinzufügen':    'Tomar bike û din zêde bike',
+    'Speichern und Bearbeitung fortsetzen': 'Tomar bike û berdewam bike',
+
+    // Misc
+    'Keine Ergebnisse':                     'Encam tune',
+    'Wählen Sie':                           'Hilbijêre',
+    'Alle':                                 'Hemû',
+};
+
+// Reverse dictionary for switching back to German
+const reverseTranslations = {};
+Object.entries(translations).forEach(([de, ku]) => {
+    reverseTranslations[ku] = de;
+});
+
+let isKurdish = localStorage.getItem('adminLang') === 'ku';
+
+function applyLanguage() {
+    const dict = isKurdish ? translations : reverseTranslations;
+    const btn = document.getElementById('lang-toggle-btn');
+
+    // Walk all text nodes and replace
+    const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode: (node) => {
+                // Skip script/style/button itself
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                if (['SCRIPT', 'STYLE', 'BUTTON'].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }
+    );
+
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach(node => {
+        const original = node.textContent.trim();
+        if (dict[original]) {
+            node.textContent = node.textContent.replace(original, dict[original]);
+        }
+    });
+
+    // Update button text
+    if (btn) {
+        btn.textContent = isKurdish ? '🌐 English' : '🌐 Kurdî';
+    }
+}
+
+function toggleLang() {
+    isKurdish = !isKurdish;
+    localStorage.setItem('adminLang', isKurdish ? 'ku' : 'de');
+    applyLanguage();
+}
+
+// Apply saved language on page load
+document.addEventListener('DOMContentLoaded', () => {
+    if (isKurdish) applyLanguage();
+});
+</script>
+{% endblock %}
